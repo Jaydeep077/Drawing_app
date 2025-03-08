@@ -57,15 +57,21 @@ const drawTriangle = (e) => {
 
 const startDraw = (e) => {
     isDrawing = true;
-    prevMouseX = e.offsetX; // passing current mouseX position as prevMouseX value
-    prevMouseY = e.offsetY; // passing current mouseY position as prevMouseY value
-    ctx.beginPath(); // creating new path to draw
-    ctx.lineWidth = brushWidth; // passing brushSize as line width
-    ctx.strokeStyle = selectedColor; // passing selectedColor as stroke style
-    ctx.fillStyle = selectedColor; // passing selectedColor as fill style
-    // copying canvas data & passing as snapshot value.. this avoids dragging the image
+
+    // Save current canvas state for Undo
+    saveHistory();
+
+    prevMouseX = e.offsetX; // Save starting mouse X position
+    prevMouseY = e.offsetY; // Save starting mouse Y position
+    ctx.beginPath(); // Start new drawing path
+    ctx.lineWidth = brushWidth; // Set brush width
+    ctx.strokeStyle = selectedColor; // Set stroke color
+    ctx.fillStyle = selectedColor; // Set fill color
+
+    // Save snapshot of canvas before drawing
     snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
-}
+};
+
 
 const drawing = (e) => {
     if(!isDrawing){
@@ -121,13 +127,72 @@ clearCanvas.addEventListener("click", () => {
     setCanvasBackground();
 });
 
-saveImg.addEventListener("click", () => {
-    const link = document.createElement("a"); // creating <a> element
-    link.download = `${Date.now()}.jpg`; // passing current date as link download value
-    link.href = canvas.toDataURL(); // passing canvasData as link href value
-    link.click(); // clicking link to download image
+document.querySelector(".save-img").addEventListener("click", () => {
+    const link = document.createElement("a");
+    const format = document.querySelector("#format-selector").value;
+
+    if (format === "svg") {
+        // Convert canvas to SVG
+        const svgData = `<svg xmlns="http://www.w3.org/2000/svg" width="${canvas.width}" height="${canvas.height}">
+            <foreignObject width="100%" height="100%">
+                <canvas xmlns="http://www.w3.org/1999/xhtml" width="${canvas.width}" height="${canvas.height}">
+                    ${canvas.toDataURL()}
+                </canvas>
+            </foreignObject>
+        </svg>`;
+
+        const blob = new Blob([svgData], { type: "image/svg+xml" });
+        link.href = URL.createObjectURL(blob);
+        link.download = "drawing.svg";
+    } else {
+        // Save as PNG or JPG
+        link.download = `drawing.${format}`;
+        link.href = canvas.toDataURL(`image/${format}`);
+    }
+
+    link.click();
 });
+
 
 canvas.addEventListener("mousedown", startDraw);
 canvas.addEventListener("mousemove", drawing);
 canvas.addEventListener("mouseup", () => isDrawing = false);
+// History stacks for undo/redo
+let history = [], redoStack = [];
+
+// Function to save canvas state
+const saveHistory = () => {
+    if (history.length > 10) history.shift(); // Limit history size
+    history.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+    redoStack = []; // Clear redo stack when new action occurs
+};
+
+// Undo function
+document.querySelector(".undo").addEventListener("click", () => {
+    if (history.length > 0) {
+        redoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height)); // Save current state to redo stack
+        ctx.putImageData(history.pop(), 0, 0); // Restore previous state
+    }
+});
+
+// Redo function
+document.querySelector(".redo").addEventListener("click", () => {
+    if (redoStack.length > 0) {
+        history.push(ctx.getImageData(0, 0, canvas.width, canvas.height)); // Save current state to history stack
+        ctx.putImageData(redoStack.pop(), 0, 0); // Restore next state
+    }
+});
+
+//mobile
+canvas.addEventListener("touchstart", (e) => {
+    e.preventDefault(); // Prevent scrolling
+    startDraw(e.touches[0]);
+});
+
+canvas.addEventListener("touchmove", (e) => {
+    e.preventDefault(); // Prevent scrolling
+    drawing(e.touches[0]);
+});
+
+canvas.addEventListener("touchend", () => isDrawing = false);
+
