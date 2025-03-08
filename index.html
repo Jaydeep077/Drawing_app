@@ -68,9 +68,17 @@
         </div>
       </div>
       <div class="row buttons">
+        <button class="undo">Undo</button>
+        <button class="redo">Redo</button>
         <button class="clear-canvas">Clear Canvas</button>
+        <select id="format-selector">
+            <option value="png">PNG</option>
+            <option value="jpg">JPG</option>
+            <option value="svg">SVG</option>
+        </select>
         <button class="save-img">Save As Image</button>
-      </div>
+    </div>
+    
     </section>
     <section class="drawing-board">
       <canvas></canvas>
