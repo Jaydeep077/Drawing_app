@@ -1,90 +1,140 @@
 <!DOCTYPE html>
-
-<html lang="en" dir="ltr">
+<html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <title>Drawing App JavaScript | CodingNepal</title>
-  <link rel="stylesheet" href="style.css">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="script.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>drw·collab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Mono:wght@700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-  <div class="container">
-    <section class="tools-board">
-      <div class="row">
-        <label class="title">Shapes</label>
-        <ul class="options">
-          <li class="option tool" id="rectangle">
-            <img src="svg/rectangle.svg" alt="">
-            <span>Rectangle</span>
-          </li>
-          <li class="option tool" id="circle">
-            <img src="svg/circle.svg" alt="">
-            <span>Circle</span>
-          </li>
-          <li class="option tool" id="triangle">
-            <img src="svg/triangle.svg" alt="">
-            <span>Triangle</span>
-          </li>
-          <li class="option">
-            <input type="checkbox" id="fill-color">
-            <label for="fill-color">Fill color</label>
-          </li>
-        </ul>
-      </div>
-      <div class="row">
-        <label class="title">Options</label>
-        <ul class="options">
-          <li class="option active tool" id="brush">
-            <img src="svg/brush.svg" alt="">
-            <span>Brush</span>
-          </li>
-          <li class="option tool" id="eraser">
-            <img src="svg/eraser.svg" alt="">
-            <span>Eraser</span>
-          </li>
-          <li class="option">
-            <input type="range" id="size-slider" min="1" max="30" value="5">
-          </li>
-        </ul>
-      </div>
-      <div class="row colors">
-        <label class="title">Colors</label>
-        <ul class="options">
-          <li class="option"></li>
-          <li class="option selected"></li>
-          <li class="option"></li>
-          <li class="option"></li>
-          <li class="option">
 
-          </li>
-        </ul> <br>
-        <div id="bgcolor">
-          <label for="">color picker:</label>
-          <input type="color" id="color-picker"><br><br>
+    <!-- Custom cursor dot -->
+    <div id="cursor-dot"></div>
 
-        </div>
-      </div>
-      <div class="row buttons">
-        <button class="undo">Undo</button>
-        <button class="redo">Redo</button>
-        <button class="clear-canvas">Clear Canvas</button>
-        <select id="format-selector">
-            <option value="png">PNG</option>
-            <option value="jpg">JPG</option>
-            <option value="svg">SVG</option>
-        </select>
-        <button class="save-img">Save As Image</button>
+    <!-- Main Canvas (drawing layer) -->
+    <canvas id="drawing-canvas"></canvas>
+
+    <!-- Text objects are placed here (on top of canvas, below toolbar) -->
+    <div id="text-objects-layer"></div>
+
+    <!-- Toolbar UI -->
+    <div class="ui-container">
+        <nav class="toolbar glass">
+
+            <!-- Logo -->
+            <a class="logo" title="drw·collab">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 20h9" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <circle cx="19" cy="6" r="2.5" fill="var(--accent)" opacity="0.35" />
+                </svg>
+                <span class="logo-text">drw<span class="logo-dot">·</span>collab</span>
+            </a>
+
+            <div class="separator"></div>
+
+            <div class="tool-group">
+                <!-- Brush -->
+                <button class="tool-btn active" data-tool="brush" title="Brush (B)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+                    </svg>
+                </button>
+                <!-- Eraser -->
+                <button class="tool-btn" data-tool="eraser" title="Eraser (E)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path
+                            d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21" />
+                        <path d="M22 21H7" />
+                        <path d="m5 11 9 9" />
+                    </svg>
+                </button>
+                <!-- Text -->
+                <button class="tool-btn" data-tool="text" title="Text Tool (T)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="4 7 4 4 20 4 20 7" />
+                        <line x1="9" x2="15" y1="20" y2="20" />
+                        <line x1="12" x2="12" y1="4" y2="20" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="separator"></div>
+
+            <div class="settings-group">
+                <!-- Color Picker -->
+                <div class="color-picker-wrapper" title="Color">
+                    <input type="color" id="color-picker" value="#2a85ff">
+                    <div class="color-preview" id="color-preview"></div>
+                </div>
+                <!-- Size Slider -->
+                <div class="stroke-wrapper">
+                    <svg class="stroke-icon" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="6" fill="currentColor" />
+                    </svg>
+                    <input type="range" id="size-slider" min="1" max="60" value="5">
+                    <span id="size-label">5px</span>
+                </div>
+            </div>
+
+            <div class="separator"></div>
+
+            <div class="action-group">
+                <!-- Dark Mode Toggle -->
+                <button class="tool-btn" id="theme-btn" title="Toggle Dark Mode">
+                    <svg id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
+                    <svg id="icon-sun" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5" />
+                        <line x1="12" x2="12" y1="1" y2="3" />
+                        <line x1="12" x2="12" y1="21" y2="23" />
+                        <line x1="4.22" x2="5.64" y1="4.22" y2="5.64" />
+                        <line x1="18.36" x2="19.78" y1="18.36" y2="19.78" />
+                        <line x1="1" x2="3" y1="12" y2="12" />
+                        <line x1="21" x2="23" y1="12" y2="12" />
+                        <line x1="4.22" x2="5.64" y1="19.78" y2="18.36" />
+                        <line x1="18.36" x2="19.78" y1="5.64" y2="4.22" />
+                    </svg>
+                </button>
+                <!-- Clear -->
+                <button class="action-btn" id="clear-btn" title="Clear Canvas">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                        <path d="M10 11v6M14 11v6" />
+                        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                    </svg>
+                </button>
+                <!-- Save -->
+                <button class="action-btn primary" id="save-btn" title="Save PNG">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" x2="12" y1="15" y2="3" />
+                    </svg>
+                    <span>Save</span>
+                </button>
+            </div>
+
+        </nav>
     </div>
-    
-    </section>
-    <section class="drawing-board">
-      <canvas></canvas>
-    </section>
-  </div>
 
+    <script src="script.js"></script>
 </body>
 
 </html>

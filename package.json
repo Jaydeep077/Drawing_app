@@ -1,0 +1,28 @@
+{
+  "name": "drawing_app",
+  "version": "1.0.0",
+  "description": "Taking about the features of this  project, The user can pick a color from the color picker and change the line width with a slider. The erase button allows erasing any spot on the drawing. The user can reset the drawing at any time and start drawing on an empty canvas and create shape like rectangle, triangle and circle.  \r   **live ---> https://jaydeep077.github.io/Drawing_app/**",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jaydeep077/Drawing_app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Jaydeep077/Drawing_app/issues"
+  },
+  "homepage": "https://github.com/Jaydeep077/Drawing_app#readme",
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "ws": "^8.19.0"
+  },
+  "devDependencies": {}
+}
