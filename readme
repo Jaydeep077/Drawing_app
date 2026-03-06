@@ -4,25 +4,12 @@ A simple browser-based drawing application that allows users to sketch freely on
 
 ---
 
-## 🚀 Live Demo
+##  Live Demo
 
 | Version               | Description                                                                                         | Link                                     |
 | --------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------- |
 | Frontend Only         | Static version hosted on GitHub Pages. Supports drawing but **no real-time collaboration**.         | https://jaydeep077.github.io/Drawing_app |
 | Collaborative Version | Full application hosted on Render with a **Node.js WebSocket server** for real-time shared drawing. | https://drawing-app-v2mx.onrender.com    |
-
----
-
-## ✨ Features
-
-* Freehand drawing on canvas
-* Adjustable brush size and color
-* Eraser tool
-* Text tool for adding notes
-* Clear canvas and save drawing as image
-* Dark / Light theme toggle
-* Real-time collaborative drawing using WebSockets
-* Shareable room links for multi-user drawing
 
 ---
 
